@@ -1,0 +1,10 @@
+# LaTeX build
+/build/
+/output/*
+!/output/main.pdf
+
+# LaTeX misc
+missfont.log
+
+# macOS
+.DS_Store
