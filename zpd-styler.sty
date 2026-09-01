@@ -13,7 +13,6 @@
 \RequirePackage{setspace}
 \RequirePackage{fontspec}
 \RequirePackage{amsmath,amssymb}
-\RequirePackage{unicode-math}
 \RequirePackage[main=latvian,english]{babel}
 \RequirePackage[unicode,hidelinks]{hyperref}
 \RequirePackage{enumitem}
@@ -41,8 +40,10 @@
 \setcounter{tocdepth}{2}
 
 \renewcommand{\thesection}{\arabic{section}.}
-\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
-\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.}
+\renewcommand{\thesubsection}
+  {\arabic{section}.\arabic{subsection}.}
+\renewcommand{\thesubsubsection}
+  {\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.}
 
 \newcommand{\zpdheadingfont}{
   \normalfont
@@ -106,7 +107,8 @@
 
 \cs_new_protected:Npn \zpd_print_authors: {
   \tl_if_blank:VF \g_zpd_authors_tl {
-    \clist_set:Nx \l_tmpa_clist {\tl_use:N \g_zpd_authors_tl}
+    \clist_set:Nx \l_tmpa_clist
+      {\tl_use:N \g_zpd_authors_tl}
 
     \int_compare:nNnTF
       {\clist_count:N \l_tmpa_clist}
@@ -127,7 +129,6 @@
 
 \NewDocumentCommand{\zpdmaketitle}{}{
   \begin{titlepage}
-
     \thispagestyle{empty}
 
     {
@@ -185,7 +186,6 @@
       \tl_use:N \g_zpd_year_tl
       \par
     }
-
   \end{titlepage}
 
   \setcounter{page}{2}
@@ -193,60 +193,115 @@
 
 \ExplSyntaxOff
 
+\NewDocumentEnvironment{zpdsection}{m}{
+  \clearpage
+  \section{#1}
+  \thispagestyle{plain}
+  \ignorespaces
+}{
+  \par
+}
+
+\NewDocumentEnvironment{zpdsubsection}{m}{
+  \subsection{#1}
+  \ignorespaces
+}{
+  \par
+}
+
+\NewDocumentEnvironment{zpdsubsubsection}{m}{
+  \subsubsection{#1}
+  \ignorespaces
+}{
+  \par
+}
+
+
 \NewDocumentCommand{\zpdsectiontitle}{m m}{
   \clearpage
   \section*{#1}
   \addcontentsline{toc}{section}{#2}
 }
 
-\NewDocumentEnvironment{zpdsection}{m}{
-  \zpdsectiontitle{#1}{#1}
-}{}
-
 \NewDocumentEnvironment{zpdannotation}{}{
-  \zpdsectiontitle{ANOTĀCIJA}{Anotācija}
-  \thispagestyle{empty}
-}{}
-
-\NewDocumentEnvironment{zpdabstract}{}{
-  \zpdsectiontitle{ABSTRACT}{Abstract}
-  \thispagestyle{empty}
-}{}
-
-\NewDocumentEnvironment{zpdintroduction}{}{
-  \zpdsectiontitle{IEVADS}{Ievads}
-  \thispagestyle{plain}
-}{}
-
-\NewDocumentEnvironment{zpdconclusions}{}{
-  \zpdsectiontitle{SECINĀJUMI}{Secinājumi}
-}{}
-
-\NewDocumentEnvironment{zpdreferences}{}{
-  \zpdsectiontitle
-    {LITERATŪRAS UN INFORMĀCIJAS AVOTU SARAKSTS}
-    {Literatūras un informācijas avotu saraksts}
-}{}
-
-\NewDocumentCommand{\zpdtableofcontents}{}{
   \clearpage
   \thispagestyle{empty}
-  \section*{SATURS}
-  \makeatletter
-  \@starttoc{toc}
-  \makeatother
+  \section*{ANOTĀCIJA}
+  \addcontentsline{toc}{section}{Anotācija}
+  \selectlanguage{latvian}
+  \ignorespaces
+}{
+  \par
+}
+
+\NewDocumentEnvironment{zpdabstract}{}{
+  \par
+  \bigskip
+  \noindent
+  \begin{minipage}{\textwidth}
+    \thispagestyle{empty}
+    \selectlanguage{english}
+    \section*{ABSTRACT}
+    \ignorespaces
+}{
+  \end{minipage}
+  \par
+  \selectlanguage{latvian}
 }
 
 \NewDocumentCommand{\zpdkeywords}{m}{
   \bigskip
   \noindent
-  \textbf{Atslēgvārdi:} #1
+
+  \iflanguage{english}
+    {\textbf{Keywords:} #1}
+    {\textbf{Atslēgvārdi:} #1}
+}
+
+\makeatletter
+
+\newcommand{\zpdstarttoc}{
+  \@starttoc{toc}
+}
+
+\makeatother
+
+\NewDocumentCommand{\zpdtableofcontents}{}{
+  \clearpage
+  \thispagestyle{empty}
+  \section*{SATURS}
+  \zpdstarttoc
+}
+
+\NewDocumentEnvironment{zpdintroduction}{}{
+  \zpdsectiontitle{IEVADS}{Ievads}
+  \thispagestyle{plain}
+  \ignorespaces
+}{
+  \par
+}
+
+\NewDocumentEnvironment{zpdconclusions}{}{
+  \zpdsectiontitle{SECINĀJUMI}{Secinājumi}
+  \ignorespaces
+}{
+  \par
+}
+
+\NewDocumentEnvironment{zpdreferences}{}{
+  \zpdsectiontitle
+    {LITERATŪRAS UN INFORMĀCIJAS AVOTU SARAKSTS}
+    {Literatūras un informācijas avotu saraksts}
+  \ignorespaces
+}{
+  \par
 }
 
 \NewDocumentEnvironment{zpdintrodata}{}{
   \bigskip
   \begingroup
   \setlength{\parindent}{0pt}
+  \ignorespaces
 }{
   \endgroup
 }
@@ -299,6 +354,7 @@
   \hypertarget{#1}{}
   \bgroup
   \setlength{\parindent}{0pt}
+  \ignorespaces
 }{
   \par
   \egroup
