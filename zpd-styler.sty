@@ -1,74 +1,76 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{zpd-styler}[2026/09/01 Simple Latvian ZPD formatting]
+\ProvidesPackage{zpd-styler}[2026/09/01 Latvian ZPD style]
 
 \RequirePackage{iftex}
+
 \ifPDFTeX
-  \PackageError{zpd-styler}{LuaLaTeX or XeLaTeX is required}{Compile the document with LuaLaTeX or XeLaTeX.}
+  \PackageError{zpd-styler}
+    {LuaLaTeX or XeLaTeX required}
+    {Use LuaLaTeX or XeLaTeX.}
 \fi
 
 \RequirePackage[margin=2.5cm]{geometry}
 \RequirePackage{setspace}
-\singlespacing
-
 \RequirePackage{fontspec}
-\IfFileExists{fonts/TNR-v7.00/TIMES.ttf}{
-  \setmainfont{TIMES}[
-    Path=fonts/TNR-v7.00/,
-    Extension=.ttf,
-    UprightFont=TIMES,
-    BoldFont=TIMESBD,
-    ItalicFont=TIMESI,
-    BoldItalicFont=TIMESBI,
-    Ligatures=TeX
-  ]
-}{
-  \IfFontExistsTF{Times New Roman}{
-    \setmainfont{Times New Roman}[Ligatures=TeX]
-  }{
-    \setmainfont{Liberation Serif}[Ligatures=TeX]
-  }
-}
-
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{unicode-math}
-\IfFontExistsTF{TeX Gyre Termes Math}{\setmathfont{TeX Gyre Termes Math}}{\setmathfont{Latin Modern Math}}
-
 \RequirePackage[main=latvian,english]{babel}
-\RequirePackage{url}
-\RequirePackage{xurl}
 \RequirePackage[unicode,hidelinks]{hyperref}
 \RequirePackage{enumitem}
 \RequirePackage{fancyhdr}
-\RequirePackage{makecell}
 \RequirePackage{titlesec}
-\RequirePackage[ruled,vlined]{algorithm2e}
 \RequirePackage{xparse}
+
+\singlespacing
+
+\IfFontExistsTF{Times New Roman}
+  {\setmainfont{Times New Roman}[Ligatures=TeX]}
+  {\setmainfont{Liberation Serif}[Ligatures=TeX]}
 
 \pagestyle{fancy}
 \fancyhf{}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0pt}
-\fancypagestyle{plain}{%
-  \fancyhf{}%
-  \fancyfoot[C]{\thepage}%
-  \renewcommand{\headrulewidth}{0pt}%
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
 }
 
 \setcounter{tocdepth}{2}
+
 \renewcommand{\thesection}{\arabic{section}.}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.}
 \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.}
 
-\newcommand{\zpdheadingfont}{\normalfont\bfseries\fontsize{14}{16}\selectfont\filcenter}
-\titleformat{\section}[block]{\zpdheadingfont}{\thesection}{1em}{}
-\titleformat{\subsection}[block]{\zpdheadingfont}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}[block]{\zpdheadingfont}{\thesubsubsection}{1em}{}
+\newcommand{\zpdheadingfont}{
+  \normalfont
+  \bfseries
+  \fontsize{14}{16}\selectfont
+  \filcenter
+}
 
-\makeatletter
-\renewcommand{\algocf@captiontext}[2]{#2}
-\makeatother
+\titleformat{\section}[block]
+  {\zpdheadingfont}
+  {\thesection}
+  {1em}
+  {}
+
+\titleformat{\subsection}[block]
+  {\zpdheadingfont}
+  {\thesubsection}
+  {1em}
+  {}
+
+\titleformat{\subsubsection}[block]
+  {\zpdheadingfont}
+  {\thesubsubsection}
+  {1em}
+  {}
 
 \ExplSyntaxOn
+
 \tl_new:N \g_zpd_school_tl
 \tl_new:N \g_zpd_title_tl
 \tl_new:N \g_zpd_field_tl
@@ -78,127 +80,232 @@
 \tl_new:N \g_zpd_city_tl
 \tl_new:N \g_zpd_year_tl
 
-\keys_define:nn { zpd }
-  {
-    school     .tl_gset:N = \g_zpd_school_tl,
-    title      .tl_gset:N = \g_zpd_title_tl,
-    field      .tl_gset:N = \g_zpd_field_tl,
-    authors    .tl_gset:N = \g_zpd_authors_tl,
-    supervisor .tl_gset:N = \g_zpd_supervisor_tl,
-    consultant .tl_gset:N = \g_zpd_consultant_tl,
-    city       .tl_gset:N = \g_zpd_city_tl,
-    year       .tl_gset:N = \g_zpd_year_tl,
+\keys_define:nn { zpd } {
+  school     .tl_gset:N = \g_zpd_school_tl,
+  title      .tl_gset:N = \g_zpd_title_tl,
+  field      .tl_gset:N = \g_zpd_field_tl,
+  authors    .tl_gset:N = \g_zpd_authors_tl,
+  supervisor .tl_gset:N = \g_zpd_supervisor_tl,
+  consultant .tl_gset:N = \g_zpd_consultant_tl,
+  city       .tl_gset:N = \g_zpd_city_tl,
+  year       .tl_gset:N = \g_zpd_year_tl
+}
+
+\keys_set:nn { zpd } {
+  field      = {Zinātniski~pētnieciskais~darbs~datorzinātnē~un~informātikā},
+  authors    = {},
+  supervisor = {},
+  consultant = {},
+  city       = {Daugavpils},
+  year       = {2026}
+}
+
+\NewDocumentCommand{\zpdsetup}{m}{
+  \keys_set:nn { zpd } {#1}
+}
+
+\cs_new_protected:Npn \zpd_print_authors: {
+  \tl_if_blank:VF \g_zpd_authors_tl {
+    \clist_set:Nx \l_tmpa_clist {\tl_use:N \g_zpd_authors_tl}
+
+    \int_compare:nNnTF
+      {\clist_count:N \l_tmpa_clist}
+      =
+      {1}
+      {
+        \textbf{Darba~autors:}~
+        \tl_use:N \g_zpd_authors_tl
+        \par
+      }
+      {
+        \textbf{Darba~autori:}~
+        \tl_use:N \g_zpd_authors_tl
+        \par
+      }
   }
+}
 
-\keys_set:nn { zpd }
-  {
-    field = {Zinātniski~pētnieciskais~darbs~datorzinātnē~un~informātikā},
-    city  = {Daugavpils},
-    year  = {2026}
-  }
-
-\NewDocumentCommand{\zpdsetup}{m}{\keys_set:nn { zpd } { #1 }}
-
-\NewDocumentCommand{\zpdmaketitle}{}{%
+\NewDocumentCommand{\zpdmaketitle}{}{
   \begin{titlepage}
+
     \thispagestyle{empty}
-    {\centering \tl_use:N \g_zpd_school_tl\par}
-    \vfill
-    {\centering
-      {\bfseries\fontsize{16pt}{19.2pt}\selectfont
-       \MakeUppercase{\tl_use:N \g_zpd_title_tl}\par}
-      \bigskip
-      \tl_use:N \g_zpd_field_tl\par
+
+    {
+      \centering
+      \tl_use:N \g_zpd_school_tl
+      \par
     }
+
     \vfill
-    {\raggedleft
-      \textbf{Darba~autori:}~\tl_use:N \g_zpd_authors_tl\par
-      \medskip
-      \textbf{Darba~vadītāja:}~\tl_use:N \g_zpd_supervisor_tl\par
-      \tl_if_blank:VTF \g_zpd_consultant_tl {} {
+
+    {
+      \centering
+
+      {
+        \bfseries
+        \fontsize{16}{19.2}\selectfont
+        \MakeUppercase{\tl_use:N \g_zpd_title_tl}
+        \par
+      }
+
+      \bigskip
+
+      \tl_use:N \g_zpd_field_tl
+      \par
+    }
+
+    \vfill
+
+    {
+      \raggedleft
+
+      \zpd_print_authors:
+
+      \tl_if_blank:VF \g_zpd_supervisor_tl {
         \medskip
-        \textbf{Darba~konsultante:}~\tl_use:N \g_zpd_consultant_tl\par
+        \textbf{Darba~vadītāja:}~
+        \tl_use:N \g_zpd_supervisor_tl
+        \par
+      }
+
+      \tl_if_blank:VF \g_zpd_consultant_tl {
+        \medskip
+        \textbf{Darba~konsultante:}~
+        \tl_use:N \g_zpd_consultant_tl
+        \par
       }
     }
+
     \vfill
-    {\centering \tl_use:N \g_zpd_city_tl,\enspace \tl_use:N \g_zpd_year_tl\par}
+
+    {
+      \centering
+      \tl_use:N \g_zpd_city_tl,
+      \enspace
+      \tl_use:N \g_zpd_year_tl
+      \par
+    }
+
   \end{titlepage}
+
   \setcounter{page}{2}
 }
+
 \ExplSyntaxOff
 
-\NewDocumentCommand{\zpdunnumberedsection}{m m}{%
+\NewDocumentCommand{\zpdsectiontitle}{m m}{
   \clearpage
-  \section*{#1}%
-  \addcontentsline{toc}{section}{#2}%
+  \section*{#1}
+  \addcontentsline{toc}{section}{#2}
 }
 
-\NewDocumentEnvironment{zpdabstract}{m m}{%
-  \zpdunnumberedsection{#1}{#2}%
-  \thispagestyle{empty}%
-}{%
+\NewDocumentEnvironment{zpdsection}{m}{
+  \zpdsectiontitle{#1}{#1}
+}{}
+
+\NewDocumentEnvironment{zpdannotation}{}{
+  \zpdsectiontitle{ANOTĀCIJA}{Anotācija}
+  \thispagestyle{empty}
+}{}
+
+\NewDocumentEnvironment{zpdabstract}{}{
+  \zpdsectiontitle{ABSTRACT}{Abstract}
+  \thispagestyle{empty}
+}{}
+
+\NewDocumentEnvironment{zpdintroduction}{}{
+  \zpdsectiontitle{IEVADS}{Ievads}
+  \thispagestyle{plain}
+}{}
+
+\NewDocumentEnvironment{zpdconclusions}{}{
+  \zpdsectiontitle{SECINĀJUMI}{Secinājumi}
+}{}
+
+\NewDocumentEnvironment{zpdreferences}{}{
+  \zpdsectiontitle
+    {LITERATŪRAS UN INFORMĀCIJAS AVOTU SARAKSTS}
+    {Literatūras un informācijas avotu saraksts}
+}{}
+
+\NewDocumentCommand{\zpdtableofcontents}{}{
+  \clearpage
+  \thispagestyle{empty}
+  \section*{SATURS}
+  \makeatletter
+  \@starttoc{toc}
+  \makeatother
 }
 
-\NewDocumentCommand{\zpdkeywords}{m m}{%
+\NewDocumentCommand{\zpdkeywords}{m}{
   \bigskip
-  \noindent\textbf{#1:} #2
+  \noindent
+  \textbf{Atslēgvārdi:} #1
 }
 
-\makeatletter
-\newcommand{\zpdstarttoc}{\@starttoc{toc}}
-\makeatother
-\NewDocumentCommand{\zpdtableofcontents}{}{%
-  \clearpage
-  \thispagestyle{empty}%
-  \section*{SATURS}%
-  \zpdstarttoc
-}
-
-\NewDocumentCommand{\zpdintroduction}{}{%
-  \zpdunnumberedsection{IEVADS}{Ievads}%
-  \thispagestyle{plain}%
-}
-
-\NewDocumentCommand{\zpdconclusions}{}{%
-  \zpdunnumberedsection{SECINĀJUMI}{Secinājumi}%
-}
-
-\NewDocumentCommand{\zpdreferences}{}{%
-  \zpdunnumberedsection{LITERATŪRAS UN INFORMĀCIJAS AVOTU SARAKSTS}{Literatūras un informācijas avotu saraksts}%
-}
-
-\NewDocumentEnvironment{zpdintrodata}{}{%
+\NewDocumentEnvironment{zpdintrodata}{}{
   \bigskip
   \begingroup
-  \setlength{\parindent}{0pt}%
-}{%
+  \setlength{\parindent}{0pt}
+}{
   \endgroup
 }
 
-\NewDocumentCommand{\zpdgoal}{m}{%
-  \textbf{Pētījuma mērķis} ir #1\par\smallskip
+\NewDocumentCommand{\zpdgoal}{m}{
+  \textbf{Pētījuma mērķis} ir #1
+  \par
+  \smallskip
 }
 
-\NewDocumentEnvironment{zpdtasks}{}{%
-  Pētījuma mērķa sasniegšanai izvirzīti sekojoši \textbf{uzdevumi}:\par
-  \begin{enumerate}[itemsep=0pt,topsep=0pt,parsep=0pt,partopsep=0pt]
-}{%
-  \end{enumerate}\smallskip
+\NewDocumentEnvironment{zpdtasks}{}{
+  Pētījuma mērķa sasniegšanai izvirzīti sekojoši
+  \textbf{uzdevumi}:
+  \par
+
+  \begin{enumerate}[
+    itemsep=0pt,
+    topsep=0pt,
+    parsep=0pt,
+    partopsep=0pt
+  ]
+}{
+  \end{enumerate}
+  \smallskip
 }
 
-\NewDocumentCommand{\zpdquestion}{m}{%
-  \textbf{Pētījuma jautājums:} #1\par\smallskip
+\NewDocumentCommand{\zpdquestion}{m}{
+  \textbf{Pētījuma jautājums:} #1
+  \par
+  \smallskip
 }
 
-\NewDocumentCommand{\zpdhypothesis}{m}{%
-  \textbf{Hipotēze:} #1\par\smallskip
+\NewDocumentCommand{\zpdhypothesis}{m}{
+  \textbf{Hipotēze:} #1
+  \par
+  \smallskip
 }
 
-\NewDocumentCommand{\zpdmethods}{m}{%
-  \textbf{Pētījuma metodes:} #1\par
+\NewDocumentCommand{\zpdmethods}{m}{
+  \textbf{Pētījuma metodes:} #1
+  \par
 }
 
-\NewDocumentCommand{\zpdref}{m m}{\hyperlink{#1}{(#2)}}
-\NewDocumentEnvironment{zpdsource}{m}{\par\hypertarget{#1}{}\bgroup\setlength{\parindent}{0pt}}{\par\egroup\medskip}
+\NewDocumentCommand{\zpdref}{m m}{
+  \hyperlink{#1}{(#2)}
+}
 
-\setlist[enumerate]{leftmargin=*,label=\arabic*.}
+\NewDocumentEnvironment{zpdsource}{m}{
+  \par
+  \hypertarget{#1}{}
+  \bgroup
+  \setlength{\parindent}{0pt}
+}{
+  \par
+  \egroup
+  \medskip
+}
+
+\setlist[enumerate]{
+  leftmargin=*,
+  label=\arabic*.
+}
