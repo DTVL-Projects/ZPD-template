@@ -1,0 +1,64 @@
+name: Upload tp drive
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    name: Upload to Google Drive
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      DRIVE_ROOT: gdrive_research:researched
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Prepare
+        run: |
+          repo="${GITHUB_REPOSITORY##*/}"
+          project="$(printf '%s' "$repo" | sed -E 's/[-_]zpd$//I')"
+
+          echo "PROJECT_NAME=$project" >> "$GITHUB_ENV"
+
+          if [ ! -d output ]; then
+            echo "::error::Directory 'output' does not exist"
+            exit 1
+          fi
+
+      - name: Install rclone
+        run: curl -fsSL https://rclone.org/install.sh | sudo bash
+
+      - name: Configure rclone
+        env:
+          CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          TOKEN: ${{ secrets.GDRIVE_TOKEN }}
+        run: |
+          mkdir -p ~/.config/rclone
+
+          cat > ~/.config/rclone/rclone.conf <<EOF
+          [gdrive_research]
+          type = drive
+          client_id = ${CLIENT_ID}
+          client_secret = ${CLIENT_SECRET}
+          scope = drive
+          token = ${TOKEN}
+          EOF
+
+          chmod 600 ~/.config/rclone/rclone.conf
+
+      - name: Upload
+        run: |
+          rclone sync \
+            output/ \
+            "$DRIVE_ROOT/$PROJECT_NAME" \
+            --create-empty-src-dirs \
+            --checksum \
+            --progress
